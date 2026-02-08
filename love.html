@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <!-- 核心：适配手机屏幕 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>满心欢喜都是你</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "PingFang SC", "Heiti SC", "Microsoft YaHei", sans-serif;
+        }
+        body {
+            background-color: #f5f5f5;
+            height: 100vh;
+            overflow: hidden; /* 防止页面滚动 */
+        }
+        /* 弹窗样式 */
+        .popup {
+            position: absolute;
+            width: 180px;
+            height: 100px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+            opacity: 0.6; /* 透明度（和桌面版0.6一致） */
+            z-index: 9999;
+            transition: all 0.2s ease;
+            cursor: pointer; /* 手机点击有反馈 */
+        }
+        /* 关闭按钮 */
+        .close-btn {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 20px;
+            background-color: #ff2d55;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-size: 16px;
+            font-weight: bold;
+            z-index: 10000;
+            opacity: 0.9;
+        }
+        .close-btn:hover {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <!-- 一键关闭按钮（适配手机，替代ESC键） -->
+    <button class="close-btn" onclick="closeAllPopups()">点击关闭所有祝福</button>
+
+    <script>
+        // 祝福文本列表
+        const blessTexts = [
+            "思念藏在代码里",
+            "满心欢喜都是你",
+            "余生漫漫一路有你",
+            "平安喜乐，万事顺意",
+            "4k屏幕装不下我的喜欢"
+        ];
+
+        // 文字颜色（高对比度）
+        const textColors = ["#e60049", "#ff2d55", "#0088ff", "#ff7800", "#9900ff"];
+
+        // 随机背景色（柔和系）
+        const bgColors = [
+            "#f8f9fa", "#fff0f3", "#e8f4f8", "#faf6ed", "#fcf1f7",
+            "#eaf6fa", "#f9f5f0", "#fdf2f8", "#f5fafe", "#f7f3e9"
+        ];
+
+        // 存储所有弹窗元素
+        let allPopups = [];
+
+        // 创建单个弹窗
+        function createPopup() {
+            const popup = document.createElement("div");
+            popup.className = "popup";
+
+            // 随机选文本、文字色、背景色
+            const text = blessTexts[Math.floor(Math.random() * blessTexts.length)];
+            const textColor = textColors[Math.floor(Math.random() * textColors.length)];
+            const bgColor = bgColors[Math.floor(Math.random() * bgColors.length)];
+
+            // 设置样式
+            popup.innerText = text;
+            popup.style.color = textColor;
+            popup.style.backgroundColor = bgColor;
+
+            // 随机位置（适配手机屏幕）
+            const screenWidth = window.innerWidth;
+            const screenHeight = window.innerHeight;
+            const left = Math.random() * (screenWidth - 180); // 弹窗宽度180
+            const top = Math.random() * (screenHeight - 100); // 弹窗高度100
+            popup.style.left = `${left}px`;
+            popup.style.top = `${top}px`;
+
+            // 点击单个弹窗关闭
+            popup.onclick = function() {
+                closePopup(popup);
+            };
+
+            // 添加到页面和列表
+            document.body.appendChild(popup);
+            allPopups.push(popup);
+
+            // 2秒后自动关闭
+            setTimeout(() => {
+                closePopup(popup);
+            }, 2000);
+        }
+
+        // 关闭单个弹窗
+        function closePopup(popup) {
+            // 渐变消失
+            popup.style.opacity = 0;
+            setTimeout(() => {
+                if (popup.parentNode) {
+                    popup.parentNode.removeChild(popup);
+                }
+                // 从列表移除
+                const index = allPopups.indexOf(popup);
+                if (index > -1) {
+                    allPopups.splice(index, 1);
+                }
+            }, 200);
+        }
+
+        // 关闭所有弹窗
+        function closeAllPopups() {
+            allPopups.forEach(popup => {
+                closePopup(popup);
+            });
+            allPopups = [];
+        }
+
+        // 慢速度创建弹窗（每100ms一个，共50个）
+        function createPopupsBatch() {
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    createPopup();
+                }, i * 100); // 100ms一个，速度和桌面版一致
+            }
+        }
+
+        // 页面加载后启动
+        window.onload = function() {
+            createPopupsBatch();
+        };
+    </script>
+</body>
+</html>
